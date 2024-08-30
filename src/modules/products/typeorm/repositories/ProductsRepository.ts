@@ -20,7 +20,9 @@ export class ProductRepository extends Repository<Product> {
   public async findAllByIds(products: IFindProducts[]): Promise<Product[]> {
     const productIds = products.map(product => product.id);
     const existsProducts = await this.find({
-      where: In(productIds),
+      where: {
+        id: In(productIds),
+      },
     });
 
     return existsProducts;
