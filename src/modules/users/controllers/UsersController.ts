@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import ListUserService from '../services/ListUserService';
 import CreateUserService from '../services/CreateUserService';
 import { instanceToInstance } from 'class-transformer';
+import DeleteUserService from '../services/DeleteUserService';
 
 class UsersController {
   public async index(req: Request, res: Response): Promise<Response> {
@@ -20,6 +21,15 @@ class UsersController {
       email,
       password,
     });
+
+    return res.json(instanceToInstance(user));
+  }
+
+  public async remove(req: Request, res: Response): Promise<Response> {
+    const { id } = req.params;
+
+    const deleteUser = new DeleteUserService();
+    const user = deleteUser.execute({ id });
 
     return res.json(instanceToInstance(user));
   }

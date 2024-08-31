@@ -5,6 +5,7 @@ import { getCustomRepository } from 'typeorm';
 import User from '../typeorm/entities/User';
 import UsersRepository from '../typeorm/repositories/UsersRepository';
 import uploadConfig from '@config/upload';
+import RedisCache from '@shared/cache/RedisCache';
 
 interface IRequest {
   user_id: string;
@@ -33,6 +34,10 @@ class UpdateUserAvatarService {
     user.avatar = avatarFilename;
 
     await usersRepository.save(user);
+
+    const redisCache = new RedisCache();
+    const key = process.env.USER_CACHE_PREFIX as string;
+    await redisCache.invalidate(key);
 
     return user;
   }

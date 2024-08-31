@@ -1,6 +1,7 @@
 import { getCustomRepository } from 'typeorm';
 import CustomersRepository from '../typeorm/repositories/CustomersRepository';
 import AppError from '@shared/errors/AppError';
+import RedisCache from '@shared/cache/RedisCache';
 
 interface IRequest {
   name: string;
@@ -22,6 +23,10 @@ class CreateCustomersService {
     });
 
     await customersRepository.save(customer);
+
+    const redisCache = new RedisCache();
+    const key = process.env.CUSTOMER_CACHE_PREFIX as string;
+    redisCache.invalidate(key);
 
     return customer;
   }
