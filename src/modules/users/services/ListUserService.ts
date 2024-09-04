@@ -1,7 +1,7 @@
 import { getCustomRepository } from 'typeorm';
 import UsersRepository from '../typeorm/repositories/UsersRepository';
 import User from '../typeorm/entities/User';
-import RedisCache from '@shared/cache/RedisCache';
+import redisCache from '@shared/cache/RedisCache';
 
 interface IPaginateUser {
   from: number;
@@ -17,7 +17,7 @@ interface IPaginateUser {
 class ListUserService {
   public async execute(): Promise<IPaginateUser> {
     const usersRepository = getCustomRepository(UsersRepository);
-    const redisCache = new RedisCache();
+
     const key = process.env.USER_CACHE_PREFIX as string;
 
     let users = await redisCache.recover<IPaginateUser>(key);

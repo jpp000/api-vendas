@@ -1,4 +1,4 @@
-import RedisCache from '@shared/cache/RedisCache';
+import redisCache from '@shared/cache/RedisCache';
 import User from '../typeorm/entities/User';
 import { getCustomRepository } from 'typeorm';
 import UsersRepository from '../typeorm/repositories/UsersRepository';
@@ -19,7 +19,6 @@ class DeleteUserService {
 
     await usersRepository.remove(user);
 
-    const redisCache = new RedisCache();
     const key = process.env.USER_CACHE_PREFIX as string;
     await redisCache.invalidate(key);
 

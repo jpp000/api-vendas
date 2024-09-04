@@ -1,7 +1,7 @@
 import { getCustomRepository } from 'typeorm';
 import Product from '../typeorm/entities/Product';
 import { ProductRepository } from '../typeorm/repositories/ProductsRepository';
-import RedisCache from '@shared/cache/RedisCache';
+import redisCache from '@shared/cache/RedisCache';
 
 interface IPaginateProduct {
   from: number;
@@ -17,7 +17,7 @@ interface IPaginateProduct {
 class ListProductService {
   public async execute(): Promise<IPaginateProduct> {
     const productsRepository = getCustomRepository(ProductRepository);
-    const redisCache = new RedisCache();
+
     const key = process.env.PRODUCT_CACHE_PREFIX as string;
 
     let products = await redisCache.recover<IPaginateProduct>(key);
