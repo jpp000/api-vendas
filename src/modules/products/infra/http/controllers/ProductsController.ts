@@ -4,10 +4,11 @@ import ShowProductService from '../../../services/ShowProductService';
 import CreateProductService from '../../../services/CreateProductService';
 import UpdateProductService from '../../../services/UpdateProductService';
 import DeleteProductService from '../../../services/DeleteProductService';
+import { container } from 'tsyringe';
 
 export default class ProductsController {
   public async index(req: Request, res: Response): Promise<Response> {
-    const ListProducts = new ListProductService();
+    const ListProducts = container.resolve(ListProductService);
     const products = await ListProducts.execute();
 
     return res.json(products);
@@ -15,15 +16,15 @@ export default class ProductsController {
 
   public async show(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
-    const showProduct = new ShowProductService();
-    const product = await showProduct.execute({ id });
+    const showProduct = container.resolve(ShowProductService);
+    const product = await showProduct.execute(id);
 
     return res.json(product);
   }
 
   public async create(req: Request, res: Response): Promise<Response> {
     const { name, price, quantity } = req.body;
-    const createProduct = new CreateProductService();
+    const createProduct = container.resolve(CreateProductService);
 
     const product = await createProduct.execute({
       name,
@@ -38,7 +39,7 @@ export default class ProductsController {
     const { id } = req.params;
     const { name, price, quantity } = req.body;
 
-    const updateProduct = new UpdateProductService();
+    const updateProduct = container.resolve(UpdateProductService);
     const product = await updateProduct.execute({
       id,
       name,
@@ -51,9 +52,9 @@ export default class ProductsController {
 
   public async delete(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
-    const deleteProduct = new DeleteProductService();
+    const deleteProduct = container.resolve(DeleteProductService);
 
-    await deleteProduct.execute({ id });
+    await deleteProduct.execute(id);
 
     return res.json({ message: 'Product deleted' });
   }

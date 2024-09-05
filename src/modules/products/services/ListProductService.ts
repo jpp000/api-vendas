@@ -1,9 +1,9 @@
-import { getCustomRepository } from 'typeorm';
 import Product from '../infra/typeorm/entities/Product';
-import { ProductRepository } from '../infra/typeorm/repositories/ProductsRepository';
 import redisCache from '@shared/cache/RedisCache';
+import { inject, injectable } from 'tsyringe';
+import { IProductRepository } from '../domain/repositories/IProductRepository';
 
-interface IPaginateProduct {
+export interface IPaginateProduct {
   from: number;
   to: number;
   per_page: number;
@@ -14,16 +14,20 @@ interface IPaginateProduct {
   data: Product[];
 }
 
+@injectable()
 class ListProductService {
-  public async execute(): Promise<IPaginateProduct> {
-    const productsRepository = getCustomRepository(ProductRepository);
+  constructor(
+    @inject('ProductRepository')
+    private productsRepository: IProductRepository,
+  ) {}
 
+  public async execute(): Promise<IPaginateProduct> {
     const key = process.env.PRODUCT_CACHE_PREFIX as string;
 
     let products = await redisCache.recover<IPaginateProduct>(key);
 
     if (!products) {
-      products = await productsRepository.createQueryBuilder().paginate();
+      products = await this.productsRepository.createQueryBuilder();
       await redisCache.save(key, products);
     }
 
