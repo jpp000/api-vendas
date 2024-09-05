@@ -3,6 +3,7 @@ import Product from '../entities/Product';
 import { ICreateProduct } from '@modules/products/domain/models/ICreateProduct';
 import { IPaginateProduct } from '@modules/products/services/ListProductService';
 import { IProductRepository } from '@modules/products/domain/repositories/IProductRepository';
+import { IUpdateStockProduct } from '@modules/products/domain/models/IUpdateStockProduct';
 
 interface IFindProducts {
   id: string;
@@ -43,6 +44,10 @@ export class ProductRepository implements IProductRepository {
 
   public async createQueryBuilder(): Promise<IPaginateProduct> {
     return await this.ormRepository.createQueryBuilder().paginate();
+  }
+
+  public async updateStock(products: IUpdateStockProduct[]): Promise<void> {
+    await this.ormRepository.save(products);
   }
 
   public async findByName(name: string): Promise<Product | undefined> {
