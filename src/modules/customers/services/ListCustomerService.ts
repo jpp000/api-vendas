@@ -1,29 +1,22 @@
-import { getCustomRepository } from 'typeorm';
-import Customer from '../infra/typeorm/entities/Customer';
-import CustomersRepository from '../infra/typeorm/repositories/CustomersRepository';
 import redisCache from '@shared/cache/RedisCache';
+import { inject, injectable } from 'tsyringe';
+import { ICustomersRepository } from '../domain/repositories/ICustomersRepository';
+import { IPaginateCustomer } from '../domain/models/IPaginateCustomer';
 
-interface IPaginateCustomer {
-  from: number;
-  to: number;
-  per_page: number;
-  total: number;
-  current_page: number;
-  last_page: number | null;
-  next_page?: number | null;
-  data: Customer[];
-}
-
+@injectable()
 class ListCustomerService {
-  public async execute(): Promise<IPaginateCustomer> {
-    const customersRepository = getCustomRepository(CustomersRepository);
+  constructor(
+    @inject('CustomersRepository')
+    private customersRepository: ICustomersRepository,
+  ) {}
 
+  public async execute(): Promise<IPaginateCustomer> {
     const key = process.env.CUSTOMER_CACHE_PREFIX as string;
 
     let customers = await redisCache.recover<IPaginateCustomer>(key);
 
     if (!customers) {
-      customers = await customersRepository.createQueryBuilder().paginate();
+      customers = await this.customersRepository.createQueryBuilder();
       await redisCache.save(key, customers);
     }
 

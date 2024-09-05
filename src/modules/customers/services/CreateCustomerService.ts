@@ -1,28 +1,28 @@
-import { getCustomRepository } from 'typeorm';
-import CustomersRepository from '../infra/typeorm/repositories/CustomersRepository';
 import AppError from '@shared/errors/AppError';
 import redisCache from '@shared/cache/RedisCache';
+import { ICustomersRepository } from '../domain/repositories/ICustomersRepository';
+import { ICreateCustomer } from '../domain/models/ICreateCustomer';
+import { ICustomer } from '../domain/models/ICustomer';
+import { inject, injectable } from 'tsyringe';
 
-interface IRequest {
-  name: string;
-  email: string;
-}
-
+@injectable()
 class CreateCustomersService {
-  public async execute({ name, email }: IRequest) {
-    const customersRepository = getCustomRepository(CustomersRepository);
-    const emailExists = await customersRepository.findByEmail(email);
+  constructor(
+    @inject('CustomersRepository')
+    private customersRepository: ICustomersRepository,
+  ) {}
+
+  public async execute({ name, email }: ICreateCustomer): Promise<ICustomer> {
+    const emailExists = await this.customersRepository.findByEmail(email);
 
     if (emailExists) {
       throw new AppError('Email address already used.');
     }
 
-    const customer = customersRepository.create({
+    const customer = await this.customersRepository.create({
       name,
       email,
     });
-
-    await customersRepository.save(customer);
 
     const key = process.env.CUSTOMER_CACHE_PREFIX as string;
     redisCache.invalidate(key);
