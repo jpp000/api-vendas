@@ -27,7 +27,7 @@ class ListProductService {
     let products = await redisCache.recover<IPaginateProduct>(key);
 
     if (!products) {
-      products = await this.productsRepository.createQueryBuilder();
+      products = await this.productsRepository.listAll();
       await redisCache.save(key, products);
     }
 

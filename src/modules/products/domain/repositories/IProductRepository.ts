@@ -15,5 +15,5 @@ export interface IProductRepository {
   save(product: IProduct): Promise<IProduct>;
   create({ name, price, quantity }: ICreateProduct): Promise<IProduct>;
   remove(product: IProduct): Promise<void>;
-  createQueryBuilder(): Promise<IPaginateProduct>;
+  listAll(): Promise<IPaginateProduct>;
 }

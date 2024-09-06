@@ -10,5 +10,5 @@ export interface ICustomersRepository {
   save(customer: ICustomer): Promise<ICustomer>;
   remove(customer: ICustomer): Promise<void>;
   find(): Promise<ICustomer[]>;
-  createQueryBuilder(): Promise<IPaginateCustomer>;
+  listAll(): Promise<IPaginateCustomer>;
 }

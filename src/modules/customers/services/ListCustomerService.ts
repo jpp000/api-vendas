@@ -16,7 +16,7 @@ class ListCustomerService {
     let customers = await redisCache.recover<IPaginateCustomer>(key);
 
     if (!customers) {
-      customers = await this.customersRepository.createQueryBuilder();
+      customers = await this.customersRepository.listAll();
       await redisCache.save(key, customers);
     }
 

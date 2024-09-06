@@ -36,7 +36,7 @@ class CustomersRepository implements ICustomersRepository {
     return await this.ormRepository.find();
   }
 
-  public async createQueryBuilder(): Promise<IPaginateCustomer> {
+  public async listAll(): Promise<IPaginateCustomer> {
     return await this.ormRepository.createQueryBuilder().paginate();
   }
 

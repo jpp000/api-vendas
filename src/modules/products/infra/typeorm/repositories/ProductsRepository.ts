@@ -42,7 +42,7 @@ export class ProductRepository implements IProductRepository {
     return product;
   }
 
-  public async createQueryBuilder(): Promise<IPaginateProduct> {
+  public async listAll(): Promise<IPaginateProduct> {
     return await this.ormRepository.createQueryBuilder().paginate();
   }
 
