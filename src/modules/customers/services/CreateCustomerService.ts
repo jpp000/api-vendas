@@ -1,15 +1,18 @@
 import AppError from '@shared/errors/AppError';
-import redisCache from '@shared/cache/RedisCache';
 import { ICustomersRepository } from '../domain/repositories/ICustomersRepository';
 import { ICreateCustomer } from '../domain/models/ICreateCustomer';
 import { ICustomer } from '../domain/models/ICustomer';
 import { inject, injectable } from 'tsyringe';
+import { ICacheProvider } from '@shared/cache/models/ICacheProvider';
 
 @injectable()
 class CreateCustomersService {
   constructor(
     @inject('CustomersRepository')
     private customersRepository: ICustomersRepository,
+
+    @inject('CacheProvider')
+    private redisCache: ICacheProvider,
   ) {}
 
   public async execute({ name, email }: ICreateCustomer): Promise<ICustomer> {
@@ -25,7 +28,7 @@ class CreateCustomersService {
     });
 
     const key = process.env.CUSTOMER_CACHE_PREFIX as string;
-    redisCache.invalidate(key);
+    await this.redisCache.invalidate(key);
 
     return customer;
   }

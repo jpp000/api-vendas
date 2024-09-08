@@ -1,15 +1,18 @@
 import Customer from '../infra/typeorm/entities/Customer';
 import AppError from '@shared/errors/AppError';
-import redisCache from '@shared/cache/RedisCache';
 import { inject, injectable } from 'tsyringe';
 import { IRequestUpdateCustomer } from '../domain/models/IRequestUpdateCustomer';
 import { ICustomersRepository } from '../domain/repositories/ICustomersRepository';
+import { ICacheProvider } from '@shared/cache/models/ICacheProvider';
 
 @injectable()
 class UpdateCustomerService {
   constructor(
     @inject('CustomersRepository')
     private customersRepository: ICustomersRepository,
+
+    @inject('CacheProvider')
+    private redisCache: ICacheProvider,
   ) {}
 
   public async execute({
@@ -35,7 +38,7 @@ class UpdateCustomerService {
     this.customersRepository.save(customer);
 
     const key = process.env.CUSTOMER_CACHE_PREFIX as string;
-    redisCache.invalidate(key);
+    await this.redisCache.invalidate(key);
 
     return customer;
   }
