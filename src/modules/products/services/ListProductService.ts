@@ -1,7 +1,7 @@
 import Product from '../infra/typeorm/entities/Product';
-import redisCache from '@shared/cache/RedisCache';
 import { inject, injectable } from 'tsyringe';
 import { IProductRepository } from '../domain/repositories/IProductRepository';
+import { ICacheProvider } from '@shared/cache/models/ICacheProvider';
 
 export interface IPaginateProduct {
   from: number;
@@ -19,16 +19,19 @@ class ListProductService {
   constructor(
     @inject('ProductRepository')
     private productsRepository: IProductRepository,
+
+    @inject('CacheProvider')
+    private redisCache: ICacheProvider,
   ) {}
 
   public async execute(): Promise<IPaginateProduct> {
     const key = process.env.PRODUCT_CACHE_PREFIX as string;
 
-    let products = await redisCache.recover<IPaginateProduct>(key);
+    let products = await this.redisCache.recover<IPaginateProduct>(key);
 
     if (!products) {
       products = await this.productsRepository.listAll();
-      await redisCache.save(key, products);
+      await this.redisCache.save(key, products);
     }
 
     return products as IPaginateProduct;

@@ -3,16 +3,19 @@ import path from 'path';
 import fs from 'fs';
 import User from '../infra/typeorm/entities/User';
 import uploadConfig from '@config/upload';
-import redisCache from '@shared/cache/RedisCache';
 import { inject, injectable } from 'tsyringe';
 import { IUsersRepository } from '../domain/repositories/IUsersRepository';
 import { IUpdateAvatar } from '../domain/models/IUpdateAvatar';
+import { ICacheProvider } from '@shared/cache/models/ICacheProvider';
 
 @injectable()
 class UpdateUserAvatarService {
   constructor(
     @inject('UsersRepository')
     private usersRepository: IUsersRepository,
+
+    @inject('CacheProvider')
+    private redisCache: ICacheProvider,
   ) {}
 
   public async execute({
@@ -39,7 +42,7 @@ class UpdateUserAvatarService {
     await this.usersRepository.save(user);
 
     const key = process.env.USER_CACHE_PREFIX as string;
-    await redisCache.invalidate(key);
+    await this.redisCache.invalidate(key);
 
     return user;
   }

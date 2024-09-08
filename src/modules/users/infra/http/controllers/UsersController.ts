@@ -30,7 +30,7 @@ class UsersController {
     const { id } = req.params;
 
     const deleteUser = container.resolve(DeleteUserService);
-    const user = deleteUser.execute(id);
+    const user = await deleteUser.execute(id);
 
     return res.json(instanceToInstance(user));
   }
