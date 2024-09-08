@@ -16,7 +16,7 @@ describe('listUser', () => {
     listUser = new ListUserService(fakeUsersRepository, fakeCacheProvider);
   });
 
-  it('should list all customers from repository if cache is empty', async () => {
+  it('should list all users from repository if cache is empty', async () => {
     await fakeUsersRepository.create({
       name: 'Joao',
       email: 'teste@teste.com',
