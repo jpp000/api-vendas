@@ -1,15 +1,18 @@
 import AppError from '@shared/errors/AppError';
 import User from '../infra/typeorm/entities/User';
-import { compare, hash } from 'bcryptjs';
 import { inject, injectable } from 'tsyringe';
 import { IUpdateProfile } from '../domain/models/IUpdateProfile';
 import { IUsersRepository } from '../domain/repositories/IUsersRepository';
+import { IHashProvider } from '../providers/HashProvider/models/IHashProvider';
 
 @injectable()
 class UpdateProfileService {
   constructor(
     @inject('UsersRepository')
     private usersRepository: IUsersRepository,
+
+    @inject('HashProvider')
+    private hashProvider: IHashProvider,
   ) {}
 
   public async execute({
@@ -36,13 +39,16 @@ class UpdateProfileService {
     }
 
     if (password && old_password) {
-      const actual_pass = await compare(old_password, user.password);
+      const actual_pass = await this.hashProvider.compareHash(
+        old_password,
+        user.password,
+      );
 
       if (!actual_pass) {
         throw new AppError('Old Password Incorrect');
       }
 
-      user.password = await hash(password, 8);
+      user.password = await this.hashProvider.generateHash(password);
     }
 
     user.name = name;

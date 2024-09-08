@@ -1,10 +1,10 @@
 import User from '../infra/typeorm/entities/User';
 import AppError from '@shared/errors/AppError';
-import { hash } from 'bcryptjs';
 import { IUsersRepository } from '../domain/repositories/IUsersRepository';
 import { inject, injectable } from 'tsyringe';
 import { ICreateUser } from '../domain/models/ICreateUser';
 import { ICacheProvider } from '@shared/cache/models/ICacheProvider';
+import { IHashProvider } from '../providers/HashProvider/models/IHashProvider';
 
 @injectable()
 class CreateUserService {
@@ -14,6 +14,9 @@ class CreateUserService {
 
     @inject('CacheProvider')
     private redisCache: ICacheProvider,
+
+    @inject('HashProvider')
+    private hashProvider: IHashProvider,
   ) {}
 
   public async execute({ name, email, password }: ICreateUser): Promise<User> {
@@ -23,7 +26,7 @@ class CreateUserService {
       throw new AppError('Email address already exists.');
     }
 
-    const hashedPassword = await hash(password, 8);
+    const hashedPassword = await this.hashProvider.generateHash(password);
 
     const user = this.usersRepository.create({
       name,
