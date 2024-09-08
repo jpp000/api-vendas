@@ -1,10 +1,9 @@
-import { EntityRepository, getRepository, Repository } from 'typeorm';
+import { getRepository, Repository } from 'typeorm';
 import User from '../entities/User';
 import { IUsersRepository } from '@modules/users/domain/repositories/IUsersRepository';
 import { ICreateUser } from '@modules/users/domain/models/ICreateUser';
 import { IPaginateUser } from '@modules/users/domain/models/IPaginateUser';
 
-@EntityRepository(User)
 class UsersRepository implements IUsersRepository {
   ormRepository: Repository<User>;
 
@@ -34,7 +33,7 @@ class UsersRepository implements IUsersRepository {
     await this.ormRepository.remove(user);
   }
 
-  public async findAll(): Promise<IPaginateUser> {
+  public async listAll(): Promise<IPaginateUser> {
     return this.ormRepository.createQueryBuilder().paginate();
   }
 

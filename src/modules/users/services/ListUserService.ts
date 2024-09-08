@@ -19,7 +19,7 @@ class ListUserService {
     let users = await this.redisCache.recover<IPaginateUser>(key);
 
     if (!users) {
-      users = await this.usersRepository.findAll();
+      users = await this.usersRepository.listAll();
       await this.redisCache.save(key, users);
     }
 
