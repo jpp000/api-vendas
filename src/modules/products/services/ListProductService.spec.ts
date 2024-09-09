@@ -18,7 +18,7 @@ describe('ListProducts', () => {
     );
   });
 
-  it('should list all customers from repository if cache is empty', async () => {
+  it('should list all products from repository if cache is empty', async () => {
     await fakeProductRepository.create({
       name: 'Product',
       quantity: 1,
@@ -31,7 +31,7 @@ describe('ListProducts', () => {
       price: 20,
     });
 
-    const customers = await listProducts.execute();
+    const products = await listProducts.execute();
 
     const list: IPaginateProduct = {
       from: 1,
@@ -40,7 +40,7 @@ describe('ListProducts', () => {
       total: 2,
       current_page: 1,
       last_page: 1,
-      data: customers as unknown as Product[],
+      data: products as unknown as Product[],
     };
 
     expect(list.data.length).toBe(2);
@@ -70,8 +70,8 @@ describe('ListProducts', () => {
 
     expect(recoverSpy).toHaveBeenCalledWith(key);
 
-    const customers = await fakeProductRepository.listAll();
-    expect(saveSpy).toHaveBeenCalledWith(key, customers);
+    const products = await fakeProductRepository.listAll();
+    expect(saveSpy).toHaveBeenCalledWith(key, products);
   });
 
   it('should use cache if data is already present', async () => {
@@ -89,13 +89,13 @@ describe('ListProducts', () => {
       price: 20,
     });
 
-    const customers = await fakeProductRepository.listAll();
-    await fakeCacheProvider.save(key, customers);
+    const products = await fakeProductRepository.listAll();
+    await fakeCacheProvider.save(key, products);
 
     const recoverSpy = jest.spyOn(fakeCacheProvider, 'recover');
     const saveSpy = jest.spyOn(fakeCacheProvider, 'save');
 
-    const cachedCustomers = await listProducts.execute();
+    const cachedProducts = await listProducts.execute();
 
     const list: IPaginateProduct = {
       from: 1,
@@ -104,7 +104,7 @@ describe('ListProducts', () => {
       total: 2,
       current_page: 1,
       last_page: 1,
-      data: cachedCustomers as unknown as Product[],
+      data: cachedProducts as unknown as Product[],
     };
 
     expect(recoverSpy).toHaveBeenCalledWith(key);
