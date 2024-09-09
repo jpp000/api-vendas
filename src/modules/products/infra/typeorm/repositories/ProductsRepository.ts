@@ -1,9 +1,9 @@
 import { getRepository, In, Repository } from 'typeorm';
 import Product from '../entities/Product';
 import { ICreateProduct } from '@modules/products/domain/models/ICreateProduct';
-import { IPaginateProduct } from '@modules/products/services/ListProductService';
 import { IProductRepository } from '@modules/products/domain/repositories/IProductRepository';
 import { IUpdateStockProduct } from '@modules/products/domain/models/IUpdateStockProduct';
+import { IPaginateProduct } from '@modules/products/domain/models/IPaginateProduct';
 
 interface IFindProducts {
   id: string;

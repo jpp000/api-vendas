@@ -6,6 +6,10 @@ import Product from '@modules/products/infra/typeorm/entities/Product';
 import { v4 as uuidv4 } from 'uuid';
 import { IPaginateProduct } from '../../models/IPaginateProduct';
 
+interface IFindProduct {
+  id: string;
+}
+
 class FakeProductRepository implements IProductRepository {
   private products: Product[] = [];
 
@@ -26,8 +30,13 @@ class FakeProductRepository implements IProductRepository {
     return product;
   }
 
-  public async findAllByIds(): Promise<IProduct[]> {
-    return [];
+  public async findAllByIds(products: IFindProduct[]): Promise<IProduct[]> {
+    const productIds = products.map(p => p.id);
+    const existsProducts = this.products.filter(product =>
+      productIds.includes(product.id),
+    );
+
+    return existsProducts;
   }
 
   public async findById(id: string): Promise<IProduct | undefined> {

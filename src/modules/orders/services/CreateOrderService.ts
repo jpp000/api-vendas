@@ -1,15 +1,10 @@
 import Order from '../infra/typeorm/entities/Order';
 import AppError from '@shared/errors/AppError';
-import { IProduct } from '@modules/products/domain/models/IProduct';
 import { inject, injectable } from 'tsyringe';
 import { IOrdersRepository } from '../domain/repositories/IOrdersRepository';
 import { ICustomersRepository } from '@modules/customers/domain/repositories/ICustomersRepository';
 import { IProductRepository } from '@modules/products/domain/repositories/IProductRepository';
-
-interface IRequest {
-  customer_id: string;
-  products: IProduct[];
-}
+import { IRequestCreateOrder } from '../domain/models/IRequestCreateOrder';
 
 @injectable()
 class CreateOrderService {
@@ -24,7 +19,10 @@ class CreateOrderService {
     private productsRepository: IProductRepository,
   ) {}
 
-  public async execute({ customer_id, products }: IRequest): Promise<Order> {
+  public async execute({
+    customer_id,
+    products,
+  }: IRequestCreateOrder): Promise<Order> {
     const customerExists = await this.customersRepository.findById(customer_id);
 
     if (!customerExists) {

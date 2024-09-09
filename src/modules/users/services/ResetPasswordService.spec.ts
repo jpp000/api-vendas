@@ -3,6 +3,7 @@ import FakeUsersRepository from '../domain/repositories/fakes/FakeUsersRepositor
 import FakeUserTokensRepository from '../domain/repositories/fakes/FakeUserTokensRepository';
 import FakeHashProvider from '../providers/HashProvider/fakes/FakeHashProvider';
 import ResetPasswordService from './ResetPasswordService';
+import { addHours } from 'date-fns';
 
 let fakeUsersRepository: FakeUsersRepository;
 let fakeUserTokensRepository: FakeUserTokensRepository;
@@ -64,6 +65,25 @@ describe('ResetPassword', () => {
     await expect(
       resetPassword.execute({
         token,
+        password: '654321',
+      }),
+    ).rejects.toBeInstanceOf(AppError);
+  });
+
+  it('should not be able to reset password if token is expired', async () => {
+    const user = await fakeUsersRepository.create({
+      name: 'Joao',
+      email: 'teste@teste.com',
+      password: '123456',
+    });
+
+    const userToken = await fakeUserTokensRepository.generate(user.id);
+
+    userToken.created_at = addHours(new Date(), -3);
+
+    await expect(
+      resetPassword.execute({
+        token: userToken.token,
         password: '654321',
       }),
     ).rejects.toBeInstanceOf(AppError);
