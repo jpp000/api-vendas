@@ -1,10 +1,10 @@
-import { IPaginateProduct } from '@modules/products/services/ListProductService';
 import { ICreateProduct } from '../../models/ICreateProduct';
 import { IProduct } from '../../models/IProduct';
 import { IProductRepository } from '../IProductRepository';
 import { IUpdateStockProduct } from '../../models/IUpdateStockProduct';
 import Product from '@modules/products/infra/typeorm/entities/Product';
 import { v4 as uuidv4 } from 'uuid';
+import { IPaginateProduct } from '../../models/IPaginateProduct';
 
 class FakeProductRepository implements IProductRepository {
   private products: Product[] = [];

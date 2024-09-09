@@ -1,7 +1,8 @@
 import FakeCacheProvider from '@shared/cache/fakes/FakeCacheProvider';
 import FakeProductRepository from '../domain/repositories/fakes/FakeProductRepository';
-import ListProductService, { IPaginateProduct } from './ListProductService';
+import ListProductService from './ListProductService';
 import Product from '../infra/typeorm/entities/Product';
+import { IPaginateProduct } from '@modules/products/domain/models/IPaginateProduct';
 
 let fakeProductRepository: FakeProductRepository;
 let fakeCacheProvider: FakeCacheProvider;

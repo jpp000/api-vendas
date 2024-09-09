@@ -1,18 +1,7 @@
-import Product from '../infra/typeorm/entities/Product';
 import { inject, injectable } from 'tsyringe';
 import { IProductRepository } from '../domain/repositories/IProductRepository';
 import { ICacheProvider } from '@shared/cache/models/ICacheProvider';
-
-export interface IPaginateProduct {
-  from: number;
-  to: number;
-  per_page: number;
-  total: number;
-  current_page: number;
-  last_page: number | null;
-  next_page?: number | null;
-  data: Product[];
-}
+import { IPaginateProduct } from '@modules/products/domain/models/IPaginateProduct';
 
 @injectable()
 class ListProductService {
